@@ -3,13 +3,13 @@ import json
 def test_home_page(client):
     """Test 1: Index page renders properly with 200 OK."""
     response = client.get("/")
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert b"CampusFix" in response.data
 
 def test_health_check(client):
     """Test 2: Health check endpoint returns 200 and healthy status (DevOps/Docker check)."""
     response = client.get("/health")
-    assert response.status_code == 201
+    assert response.status_code == 200
     data = response.get_json()
     assert data["status"] == "healthy"
     assert data["database"] == "connected"
@@ -17,13 +17,13 @@ def test_health_check(client):
 def test_metrics_endpoint(client):
     """Test 3: Prometheus metrics endpoint exposes metrics format (DevOps/Prometheus check)."""
     response = client.get("/metrics")
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert b"flask_http_request_duration_seconds" in response.data or b"campusfix_app_info" in response.data
 
 def test_api_stats(client):
     """Test 4: Stats API endpoint returns complaint numbers in JSON format."""
     response = client.get("/api/stats")
-    assert response.status_code == 201
+    assert response.status_code == 200
     data = response.get_json()
     assert "total_complaints" in data
     assert data["total_complaints"] >= 1
@@ -36,7 +36,7 @@ def test_user_registration(client):
         "password": "mypassword123",
         "role": "student"
     }, follow_redirects=True)
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert b"Registration successful" in response.data
 
 def test_duplicate_registration_fails(client):
@@ -46,7 +46,7 @@ def test_duplicate_registration_fails(client):
         "password": "anypassword",
         "role": "student"
     }, follow_redirects=True)
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert b"Username already exists" in response.data
 
 def test_login_success(client):
@@ -55,7 +55,7 @@ def test_login_success(client):
         "username": "student_test",
         "password": "studentpassword"
     }, follow_redirects=True)
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert b"Welcome back, student_test" in response.data
 
 def test_login_invalid_credentials(client):
@@ -64,7 +64,7 @@ def test_login_invalid_credentials(client):
         "username": "student_test",
         "password": "wrongpassword"
     }, follow_redirects=True)
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert b"Invalid credentials" in response.data
 
 def test_complaint_submission(client):
@@ -80,7 +80,7 @@ def test_complaint_submission(client):
         "category": "Classroom",
         "description": "HDMI port damaged, cannot display slides."
     }, follow_redirects=True)
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert b"Complaint submitted successfully" in response.data
     assert b"Broken projector in Hall 101" in response.data
 
@@ -117,7 +117,7 @@ def test_register_role_escalation_prevented(client):
         "password": "secretpassword123",
         "role": "admin"
     }, follow_redirects=True)
-    assert response.status_code == 201
+    assert response.status_code == 200
 
     with app.app_context():
         user = User.query.filter_by(username="sneaky_user").first()
