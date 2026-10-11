@@ -141,7 +141,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "max(100 - (node_filesystem_avail_bytes{mountpoint=\"/\",fstype!=\"rootfs\"} / node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"} * 100))",
+          "expr": "max(100 - (node_filesystem_avail_bytes{fstype!~\"tmpfs|rootfs|overlay\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|rootfs|overlay\"} * 100))",
           "refId": "A"
         }
       ],
