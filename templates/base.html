@@ -3,61 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CampusFix - College Issue Tracker{% endblock %}</title>
+    <title>{% block title %}CampusFix &bull; Autonomous DevOps Platform{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Crystallize / Prism Tokyo Design System -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="bg-light d-flex flex-column min-vh-100">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">🛠️ CampusFix</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <span class="navbar-toggler-icon"></span>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Interactive Canvas & Geometric Prism Layers -->
+    <canvas id="crystal-canvas"></canvas>
+    <div class="geometric-grid"></div>
+    <div class="prism-vignette"></div>
+
+    <!-- Glassmorphic Navbar -->
+    <nav class="navbar navbar-expand-lg glass-nav py-3">
+        <div class="container position-relative" style="z-index: 10;">
+            <a class="navbar-brand navbar-brand-gradient" href="/">
+                <svg width="22" height="22" viewBox="-120 -120 240 240" fill="currentColor" class="text-info me-1">
+                    <polygon points="0,-100 86,-50 86,50 0,100 -86,50 -86,-50" fill="none" stroke="#38bdf8" stroke-width="12"/>
+                    <line x1="0" y1="-100" x2="0" y2="100" stroke="#93c5fd" stroke-width="8"/>
+                    <line x1="-86" y1="-50" x2="86" y2="50" stroke="#93c5fd" stroke-width="8"/>
+                    <line x1="-86" y1="50" x2="86" y2="-50" stroke="#93c5fd" stroke-width="8"/>
+                </svg>
+                CampusFix
+            </a>
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-3 text-info"></i>
             </button>
             <div class="collapse navbar-collapse" id="navMenu">
-                <ul class="navbar-nav ms-auto align-items-center">
+                <ul class="navbar-nav ms-auto align-items-center gap-lg-3 mt-3 mt-lg-0">
                     {% if session.get('user_id') %}
                         <li class="nav-item">
-                            <span class="nav-link text-white-50">Logged in as: <strong class="text-white">{{ session.get('username') }} ({{ session.get('role') }})</strong></span>
+                            <span class="nav-link">
+                                <i class="bi bi-person text-info me-1"></i>
+                                <strong class="text-white font-monospace">{{ session.get('username') }}</strong>
+                                <span class="badge-category ms-1">[{{ session.get('role') }}]</span>
+                            </span>
                         </li>
                         {% if session.get('role') == 'admin' %}
-                            <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="bi bi-grid-1x2 me-1"></i> Operations
+                                </a>
+                            </li>
                         {% else %}
-                            <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('complaints') }}">My Complaints</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('complaints') }}">
+                                    <i class="bi bi-layers me-1"></i> Grievances
+                                </a>
+                            </li>
                         {% endif %}
-                        <li class="nav-item"><a class="nav-link text-warning" href="/health" target="_blank">Health Status</a></li>
-                        <li class="nav-item"><a class="nav-link text-warning" href="/metrics" target="_blank">Metrics</a></li>
-                        <li class="nav-item ms-lg-2"><a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">Logout</a></li>
+                        <li class="nav-item">
+                            <a class="live-indicator text-decoration-none" href="/health" target="_blank" title="Database Liveness Probe">
+                                <span class="ping-dot"></span> PROBE // 200 OK
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/metrics" target="_blank" title="Prometheus Scrape Endpoint" style="color: #38bdf8 !important;">
+                                <i class="bi bi-broadcast-pin me-1"></i> /metrics
+                            </a>
+                        </li>
+                        <li class="nav-item ms-lg-2">
+                            <a class="btn btn-outline-danger btn-sm rounded-pill px-3" href="{{ url_for('logout') }}" style="font-size: 0.78rem; font-family: var(--font-mono);">
+                                DISCONNECT
+                            </a>
+                        </li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('login') }}">Login</a></li>
-                        <li class="nav-item"><a class="btn btn-light btn-sm text-primary ms-lg-2" href="{{ url_for('register') }}">Register</a></li>
+                        <li class="nav-item">
+                            <a class="live-indicator text-decoration-none me-lg-2" href="/health" target="_blank">
+                                <span class="ping-dot"></span> TELEMETRY // ACTIVE
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                SIGN IN
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-crystal-primary ms-lg-2" href="{{ url_for('register') }}">
+                                GET STARTED
+                            </a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <main class="container my-4 flex-grow-1">
+    <!-- Main Content Area -->
+    <main class="container my-5 flex-grow-1 position-relative" style="z-index: 5;">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="row justify-content-center mb-4">
+                    <div class="col-lg-8">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category if category != 'danger' else 'danger' }} border-0 shadow-lg d-flex align-items-center justify-content-between p-3 rounded-3" role="alert" style="background: rgba(13, 23, 48, 0.95); border: 1px solid rgba(56, 189, 248, 0.3) !important;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-diamond-fill text-info small"></i>
+                                    <div class="text-white">{{ message }}</div>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
                     </div>
-                {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
 
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-white border-top py-3 mt-auto text-center text-muted">
-        <div class="container small">
-            CampusFix DevOps Project &bull; Flask + PostgreSQL + Docker Compose + Jenkins + Prometheus & Grafana
+    <!-- Crystallize Footer -->
+    <footer class="py-4 mt-auto border-top position-relative" style="z-index: 5; border-color: rgba(147, 197, 253, 0.08) !important; background: rgba(6, 10, 20, 0.85);">
+        <div class="container text-center text-muted small">
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-2 font-monospace" style="font-size: 0.76rem; letter-spacing: 0.05em;">
+                <span class="text-info">FLASK 3.0</span>
+                <span>&bull;</span>
+                <span class="text-white">POSTGRESQL 15</span>
+                <span>&bull;</span>
+                <span class="text-info">DOCKER DIN-D</span>
+                <span>&bull;</span>
+                <span class="text-white">JENKINS CI/CD</span>
+                <span>&bull;</span>
+                <span class="text-info">PROMETHEUS + GRAFANA</span>
+            </div>
+            <div class="text-secondary font-monospace" style="font-size: 0.72rem; letter-spacing: 0.1em;">
+                CAMPUSFIX ARCHITECTURE &bull; EXPERIMENTS 1 THROUGH 7 UNIFIED &bull; TOKYO PRISM EDITION
+            </div>
         </div>
     </footer>
 
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Crystallize Tokyo Interactive Engine -->
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 </html>
